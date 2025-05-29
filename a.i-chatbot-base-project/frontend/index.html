@@ -4,12 +4,32 @@
     <title>Chatbot</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.min.js"></script>
+
+    <style>
+        .message {
+            border-radius: 10px;
+            padding: 10px;
+            margin: 5px 0;
+            line-height: 1.4;
+        }
+        .user-message {
+            background-color: #007bff;
+            color: white;
+            text-align: right;
+            margin-left: 20%;
+        }
+        .bot-message {
+            background-color: #e9ecef;
+            text-align: left;
+            margin-right: 20%;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <div class="row">
             <div class="col-md-8 offset-md-2">
-                <h1 class="text-center">Chat with A.I</h1>
+                <h1 class="text-center">Chatbot AI</h1>
                 <div id="chatbox" class="border p-3 mb-4" style="height: 400px; overflow-y: auto;">
                     <!-- Messages will be appended here -->
                 </div>
@@ -24,42 +44,38 @@
     </div>
 
     <script>
-        // Javascript goes here
+        let previousMessage;
+
         async function sendMessage() {
-            const inputbox = document.getElementById("inputbox");
-
+            const inputbox = document.getElementById('inputbox');
             const message = inputbox.value;
+            appendMessage(message, 'user');
 
-            appendMessage(message, "user");
 
+            // Clear the input box
             inputbox.value = '';
 
+            // Make API call
             try {
+                const response = await axios.post('http://localhost:1330/message', { prompt : message, previousMessage });
+                appendMessage(response.data.message, 'bot');
 
-                const response = await axios.post('API_ENDPOINT', {
-                          message: message 
-                });
-                  
-                    appendMessage(response.data.ai_response, "bot");
-
+                previousMessage = response.data.message;
             } catch (error) {
                 console.error(error);
-                appendMessage("Error occured while fetching response","bot");
+                appendMessage('Error occurred while fetching the response.', 'bot');
             }
-
         }
 
         function appendMessage(message, sender) {
-            const chatbox = document.getElementById("chatbox");
-
-            const msgElement = document.createElement("p");
-
-            msgElement.classList = sender === 'user' ? 'text-right' : 'text-left';
-
+            const chatbox = document.getElementById('chatbox');
+            const msgElement = document.createElement('p');
+            //msgElement.classList = sender === 'user' ? 'text-right' : 'text-left text-success';
+            msgElement.classList.add('message', sender === 'user' ? 'user-message' : 'bot-message');
             msgElement.innerText = message;
-
             chatbox.appendChild(msgElement);
 
+            // Scroll to the bottom
             chatbox.scrollTop = chatbox.scrollHeight;
         }
     </script>
