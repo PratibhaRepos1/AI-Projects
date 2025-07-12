@@ -1,0 +1,9 @@
+{
+    "servers": {
+        "magic_string-mcp": {
+            "type": "stdio",
+            "command": "node",
+            "args": ["C:/AI-Projects/mcp-string/build/src/index.js"]
+        }
+    }
+}
